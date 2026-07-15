@@ -1,0 +1,145 @@
+/* Copyright (c) 2013 Readable Software Limited */
+
+.hideMe {
+    display: none;
+}
+
+.colSample {
+    padding-left:80px;
+    margin-right: 2px;
+}
+
+.colColumn {
+    margin: 0 10px 5px 10px;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+#colourSources {
+    position:relative;
+    width:194px;
+    height:194px;
+}
+
+.colourSource {
+    position:absolute;
+    left:0px;
+    top:0px;
+    width:194px;
+    height:194px;
+}
+
+.inline {
+	display: inline-block;
+}
+
+.selectedColour {
+    border: 2px dashed black;	
+}
+
+#dmcPaletteCanvas {
+    position:absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 0; 
+}
+
+#dmcPaletteImage {
+    position:absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 1;    
+}
+
+#cdoToolTip {
+    position:fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 900;
+    opacity: 0.8;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 4px;
+}
+
+#cdoToolTip p {
+    margin: 0px;
+    padding: 2px;
+    font-size: x-small;
+}
+
+#dmcNumberSample {
+    border-radius: 16px 16px 16px 16px;
+    height: 80px;
+    width: 194px;
+}
+
+#dmcNumberInputSet {
+    background-color: white;
+    border: 0 none;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+}
+
+.cdoPopup {
+    position:absolute;
+    margin:4px 0px 0px 0px;
+    padding:4px;
+    background-color: #fff;
+    border: 2px solid #d8b148;
+    border-radius: 15px / 10px;
+    z-index:-1;
+}
+
+.cdoPopup h1, #content .cdoPopup h1 {
+    margin:-4px -4px 10px -4px;
+    color: #333333;
+    background-color: #df7036;
+    font-size: medium;
+    font-weight: bold;
+    padding:4px;
+    border: 2px solid #df7036;
+    border-top-left-radius: 13px 8px;
+    border-top-right-radius: 13px 8px;
+}
+
+.cdoPopup h1:hover {
+    cursor: pointer;
+}
+
+.cdoPopup:focus {
+  outline: 0 none;
+}
+
+.popupIcons {
+    float: right;
+}
+
+.popupIcon {
+    background: #D8B148;
+    border: 1px solid #D8B148;
+    border-radius: 8px;
+    padding-left: 3px;
+    padding-right: 3px;
+    margin-left: 4px;
+}
+
+.popupIcon:hover {
+    cursor: pointer;
+    background: #F8D168;
+}
+
+.loadSaveField {
+    display: inline-block;
+    vertical-align:top;
+    margin-top: 5px;
+}
+
+iframe {
+    border: 0px;
+}
+
+

@@ -1,0 +1,481 @@
+@charset "utf-8";
+/* CSS Document */
+
+body {
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1em;
+}
+
+#header {
+	background: white url(../i/cdoBackground.jpg) top left no-repeat;
+	height: 164px;
+	width: 1099px;
+	margin: auto;
+}
+
+#container {
+	text-align: center;
+	width: 68.6em;
+	margin: auto;
+}
+
+#content {
+	position: relative;
+	color: black;
+	text-align: left;
+	width: /*700px;/**/43.7em;/**/
+	margin: auto;
+	top: -1.5em;
+}
+
+#mainNav {
+	margin: 0;
+	padding: 0;
+	position: relative;
+	/*height: 6.2em;*/
+	text-align:center;
+	top: -5.0em;
+}
+
+#mainNav a {
+	display: block;/*suggested by a List Apart*//* if not here, problem when resizing text*/
+	text-decoration: none;
+}
+
+#mainNav li { /*float the main list items*/
+	margin: 0;
+	float: left;
+	display: block;
+	padding-right: 0em;
+	padding-left: 0.45em;
+}
+
+#mainNav>ul {
+	padding-left: 1.6em;
+}
+
+#mainNav li ul { /* put the subnav below */
+	position: absolute;
+	margin: 0;
+	padding: 0.3em 0;
+	top: 0px;
+	/* check if need *hack for IE as in #mainNav .subnav*/
+	left: 0px;
+}
+
+#mainNav .subnav {
+	display: none;
+	position: absolute;
+	margin: 0;
+	padding: 0.3em 0;
+	top: 1.8em;
+	/* use *hack for IE, omit for now for FF and validation    *top: 44px; /* check in IE, was 44 when top above was 33*/
+	background-color: #DF7036;
+	left: 11.39em;
+	height: 1.7em;
+	width: 47.35em;/*640px;/*100%?*/
+}
+
+#mainNav .subnav img {
+	margin-top: -0.3em;
+	/*padding-bottom:10px;*/
+	margin-bottom: -0.3em;
+	padding-top:0.6em;
+	width: 100%;
+	height: 100%;
+}
+
+#mainNav .subnav ul {
+	width:auto;
+	height:auto;
+}
+
+#mainNav .kumi .subnav ul {
+	margin-left: 1em;
+}
+
+#mainNav .grid .subnav ul {
+    margin-left: 3.8em;
+}
+
+#mainNav .plait .subnav ul {
+	margin-left: 10em;
+}
+
+#mainNav .contact .subnav ul {
+	margin-left: 17em;
+}
+
+#mainNav .gallery .subnav ul {
+	margin-left: 20em;
+}
+
+#mainNav .info .subnav ul {
+	margin-left: 2em;
+}
+
+#mainNav li:hover .subnav {
+	display: inline;
+	z-index: 10;
+}
+
+#mainNav li a {
+	color: #333333;
+	font-weight: bold;
+	/*font-size: small;*/
+	display: block;
+	height: 1.1em;
+	width: 5.93em;
+	background: #D8B148;
+	border: 0.13em solid #D8B148;
+	border-top-left-radius: 0.9em 0.6em;
+	border-top-right-radius: 0.9em 0.6em;
+	-moz-border-radius-topleft: 0.9em 0.6em;
+	-moz-border-radius-topright: 0.9em 0.6em;
+	padding: 0.3em 0.1em;
+	padding-bottom: 0.4em;
+}
+
+#mainNav li ul a {
+	float: left; /*ie doesn't inherit the float*/
+	color: #333333;
+	width: auto;
+	margin-right: 0.9em;
+	margin-left:0.6em;
+	border: 0;
+}
+
+
+#mainNav li:hover ul {
+	display: inline-block;
+	position: absolute;
+	z-index: 6000;
+}
+
+#mainNav li a:hover, #mainNav li:hover a {
+	background: #DF7036;
+	color: #333333;
+}
+
+#mainNav>ul>li>a:hover {
+	border-bottom: 0.13em solid #DF7036;
+}
+
+#mainNav li:hover li a {
+	background: none;
+	color: #333333;
+}
+
+#mainNav ul {
+	width: 774px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.button {
+	border-radius: 0.6em / 0.5em;
+	-moz-border-radius: 0.6em / 0.5em;
+	/*border-right: 2px solid #e0e0e0;
+	border-bottom: 2px solid #e0e0e0;
+	border-left: 2px solid #a0a0a0;
+	border-top: 2px solid #a0a0a0;
+	border-width:3px;*/
+	border-color: #DF7036;
+	border-style: outset;
+	background: #DF7036;
+	padding: 0.3em;
+	float: right;
+	text-decoration: none;
+	color: black;
+}
+	
+.button:hover {
+	/*border-left: 2px solid #e0e0e0;
+	border-top: 2px solid #e0e0e0;
+	border-right: 2px solid #a0a0a0;
+	border-bottom: 2px solid #a0a0a0;
+	border-width:3px;*/
+	border-color: #DF7036;
+	border-style: inset;
+
+}
+
+#content h1 {
+	margin: 0;
+	padding: 0;
+}
+
+#content h2 {
+	margin-bottom: -0.5em;
+	font-size: large;
+}
+
+#content h2+div>div {
+	margin-top: 1em;
+}
+#content h4+p {
+	margin-top: 0;
+}
+#content h4 {
+	margin-bottom: 0;
+}
+#content a img {
+	border: none;
+	text-decoration: none;
+	padding-right: 0.5em;
+	margin-bottom: -0.3em;
+}
+
+#footer {
+	position: relative;
+	font-size:x-small;
+	color: green;
+	max-width: 1000px;
+	margin: auto;
+	top: -2em;
+}
+
+#footer ul {
+	margin-left: 6.2em;
+	list-style: none;
+}
+
+#footer li {
+	float: left;
+	text-align: center;
+	margin: 0.3em;
+}
+
+.clear {
+	clear:both;
+}
+
+#adsRt {
+	float:right;
+	width:160px;
+}
+
+#adsLt {
+	width:160px;
+	position:absolute;
+}
+
+#lhcolumn {
+	width:150px;
+	position: absolute;
+	margin-top:3em;
+}
+
+#lhcolumn .mpbraid {
+	margin-bottom:1em;
+	font-size:smaller;
+}
+
+#lhcolumn .mpbraid .child {
+	margin-top:1em;
+	width:150px;
+	margin-left: 3.5em;
+	overflow: visible;
+}
+
+/*
+#lhcolumn .mpbraid .child {
+	display: none;
+}
+
+#lhcolumn .mpbraid:hover .child,#lhcolumn .mpbraid.current .child {
+	display: inherit;
+	margin-left: 3.5em;
+	overflow: visible;
+}
+*/
+
+#lhcolumn .mpbraid img {
+	border: none;
+}
+
+#lhcolumn .mpbraid .expansion {
+	/*position: relative;*/
+	right: 0px;
+	margin-top: -31px;
+	margin-bottom: 24px;
+	margin-right: -105px;
+}
+.lhgallery img {
+	padding-top: 0.5em;
+	padding-bottom: 2.5em;
+	border: none;
+}
+
+.lhgallery img.appBadge {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+#mpdescr {
+	border: 1px solid #DF7036;
+	padding: 0.5em;
+	margin-left: -0.5em;
+}
+/*
+ * Social networking links etc
+ */
+#fb {
+	float:left;
+	margin:auto;
+	margin-top:1em;
+	margin-left:3em;
+	width:22em;
+	font-size: small;
+}
+
+.gp {
+	width: 45%;
+	float:left;
+	font-size:small;
+	/*text-align:center;*/
+}
+
+#books .title {
+	font-weight: bold;
+	margin-top:0;
+	margin-bottom:0;
+	margin-left: 100px;
+	padding-left: 1em;
+}
+
+#books img {
+	float: left;
+	margin-right: 1em;
+	padding-bottom: 1em;
+}
+
+#books .descr {
+	margin-top: 0;
+	margin-left: 100px;
+	padding-left: 1em;
+}
+
+.faq h2 {
+	font-weight: lighter;
+	padding-bottom: 0.5em;
+}
+
+#mp_pattDescr {
+	/*display: none;*/
+}
+
+#mainNav .notHere:hover .subnav li {float:left;clear:left;}
+#mainNav .notHere:hover .subnav ul {
+	background: #e48655;
+	background: -moz-linear-gradient(top,  #df7036,  #fff);
+	background: -webkit-gradient(linear, left top, left bottom, from(#df7036), to(#fff)); 
+  	background: -webkit-linear-gradient(top, #df7036, #fff);
+	background: -moz-linear-gradient(top, #df7036, #fff);
+	background: -ms-linear-gradient(top, #df7036, #fff);
+	background: -o-linear-gradient(top, #df7036, #fff);
+	background: linear-gradient(to bottom, #df7036, #fff);
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFdf7036, endColorstr=#FFFFFFFF)";
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#df7036", endColorstr="#ffffff");
+}
+#mainNav .notHere.kumi:hover .subnav ul {margin-left: 6.9em;}
+#mainNav .notHere.grid:hover .subnav ul {margin-left: 13.8em;}
+#mainNav .notHere.plait:hover .subnav ul {margin-left: 20.6em;}
+#mainNav .notHere.contact:hover .subnav ul {margin-left: 27.4em;}
+#mainNav .notHere.gallery:hover .subnav ul {margin-left: 34.3em;}
+#mainNav .notHere.info:hover .subnav ul {margin-left: 38.2em;}
+
+		#mainNav li.here a {background: #DF7036;}
+		#mainNav li.here a {
+			border: 2px solid #DF7036;
+			color: #333333;
+		}
+		#mainNav li.here li a {background: none;}
+		#mainNav li.here ul {display: inline-block;}
+		#mainNav li.here .subnav {display: inline-block;}
+		#mainNav li.here ul a {border: 0;}
+		#mainNav .subnav ul {list-style: none;}
+
+.designer {
+	font-weight: bold;
+	display:block;
+}
+
+#getLink img {
+	margin-right: 0.5em;
+}
+
+#homePageIcons {
+	margin-left:3em;
+}
+
+#homePageIcons a img {
+	padding: 0.3em;
+	margin: 0.6em;
+	border: 0.25em double lightgray;
+	border-radius: 1em;
+}
+
+.kmMenuBar {
+    margin: 0;
+    padding: 0;
+    position: relative;
+/*    height: 1em;*/
+    text-align:center;
+    top: 0.0em;
+}
+
+.kmMenuBar button {
+    display: block;/*suggested by a List Apart*//* if not here, problem when resizing text*/
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.kmMenuBar li { /*float the main list items*/
+    margin: 0;
+    float: left;
+    display: block;
+    padding-right: 0.45em;
+    padding-left: 0em;
+    position: relative;
+}
+
+.kmMenuBar>ul {
+    padding-left: 0em;
+}
+
+.kmMenuBar li button {
+    color: #333333;
+    font-weight: bold;
+    font-size: medium;
+    display: block;
+    height: 2.1em;
+    width: 5.93em;
+    background: #D8B148;
+    border: 0.13em solid #D8B148;
+    border-radius: 0.9em;
+    -moz-border-radius: 0.9em 0.6em;
+	/*border-top-left-radius: 0.9em 0.6em;
+    border-top-right-radius: 0.9em 0.6em;
+    -moz-border-radius-topleft: 0.9em 0.6em;
+    -moz-border-radius-topright: 0.9em 0.6em;*/
+    padding: 0.3em 0.1em;
+    padding-bottom: 0.4em;
+}
+
+.kmMenuBar li button.current {
+    background: #DF7036;
+    border: 0.13em solid #DF7036;
+}
+
+.kmMenuBar ul {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hidden {
+	display: none;
+}

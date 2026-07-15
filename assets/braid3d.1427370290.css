@@ -1,0 +1,149 @@
+@CHARSET "ISO-8859-1";
+
+#braidModel, #braidModel canvas, #braidModelContainer
+{ 
+	width: 354px; 
+	height: 386px; 
+	display:inline-block; 
+}
+
+#braidModelContainer {
+	position: relative;
+}
+
+#braidModel, #braidInstructions {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+#threadPoss {
+	width: 340px;
+	height: 340px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+#threadPossRel {
+	position: relative;
+    width: 340px;
+    height: 340px;
+}
+
+.threadPossLayer {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 340px;
+    height: 340px;
+}
+
+#stepComplete {
+	position: absolute;
+	top: 314px;
+	left: 0px;
+}
+
+.diagramCanvas {
+	width:170px;
+	height:170px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-right: 2px;
+    margin-left: 2px;
+}
+
+.threadItem {
+	position: absolute;
+	border: 1px solid black;
+}
+
+#inputFigures {
+	display: inline-block;
+}
+
+.diagramItem {
+	display: inline-block;
+	border:0px solid gray;
+}
+
+#modelAndControls {
+    display: inline-block;
+}
+
+#navButtons {
+	margin-top: 2px;
+	width: 280px;
+	max-width: 354px;
+}
+
+#progress {
+    display: inline-block;
+}
+
+.shortNum {
+	width:50px;
+}
+
+#colourPickers {
+	float: right;
+	width: 320px;
+}
+
+#lowerHalf {
+	width: 700px;
+}
+
+#colLists {
+	width: 113px;
+}
+
+#diagrams {
+	min-height: 220px;
+    margin-top: 4px;
+    margin-bottom: 2px;
+}
+
+.hCentre {
+	margin-left:auto;
+	margin-right:auto;
+}
+
+#lowerActions {
+    border-top: 1px solid #ccc;
+    padding-top: 2px;
+}
+
+#repeatStep {
+	padding-right: 4px;
+	margin-right: 2px;
+    border-right: 1px solid #ccc;
+}
+
+button, .buttonInput {
+	padding: 1px 6px;
+}
+
+#marudaiInstructions {
+	top: 132px;
+	left: 87px;
+	width: 170px;
+	height: 60px;
+}
+
+.startInstructions div p {
+    padding: 3px 3px;
+	background: rgba(255, 255, 200, 0.7);
+}
+
+#braidInstructions {
+    top: 150px;
+    left: 87px;
+    width: 190px;
+    height: 60px;
+}
+
+.braid3dButton {
+    padding: 1px 2px;
+}
+ 
