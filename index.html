@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%;">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width">
+<title>编绳(组纽)3D设计工具</title><link rel="stylesheet" href="./assets/cdo-screen.css" type="text/css" media="screen">
+<link rel="stylesheet" href="./assets/farbtastic.css" type="text/css" media="screen">
+<link rel="stylesheet" href="./assets/cdoLib.1369382144.css" type="text/css" media="screen">
+<link rel="stylesheet" href="./assets/braid3d.1427370290.css" type="text/css" media="screen"><script type="text/javascript" src="./assets/jquery.min.js"></script>
+<script type="text/javascript" src="./assets/farbtastic.js"></script>
+<script type="text/javascript" src="./assets/rgbcolor.js"></script>
+<script type="text/javascript" src="./assets/fontdetect.js"></script>
+<script type="text/javascript" src="./assets/cdo.js"></script>
+<script type="text/javascript" src="./assets/cdoLibmin.1427373781.js"></script>
+<script type="text/javascript" src="./assets/three.js"></script>
+<script type="text/javascript" src="./assets/braid3dmin.1369382255.js"></script><script>window.jQuery||document.write('<script src="/js/jquery-1.7.min.js"><\/script>');</script>
+<script>$(function(){$(".nojs").removeClass("nojs")});</script><style>
+/* ============================================
+方案6: 混合优化 - 平衡美观与稳重
+============================================ *//* 页面整体背景 - 淡雅渐变 */
+body {
+margin: 20px;
+font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+background: linear-gradient(to bottom, #f8fafc 0%, #e8eef5 100%);
+min-height: 100vh;
+}/* 标题美化 - 渐变下划线装饰 */
+h1.page-title {
+color: #2c3e50;
+margin-bottom: 20px;/* ← 底部间距 */
+margin-top: 40px;
+text-align: center; /* ← 水平居中 */
+font-weight: 600;
+padding-bottom: 15px;
+position: relative;
+}h1.page-title::after {
+content: "";
+position: absolute;
+bottom: 0;
+left: 50%;
+transform: translateX(-50%);
+width: 200px;
+height: 3px;
+background: linear-gradient(90deg, #5B9BD5 0%, #70B9EB 100%);
+border-radius: 2px;
+}/* 主容器使用flexbox布局 - 改为底部对齐 */
+#content-wrapper {
+display: flex !important;
+flex-wrap: nowrap !important;
+gap: 20px;
+align-items: flex-end !important;
+margin-bottom: 20px;
+}/* 左侧控制面板 - 卡片式设计 */
+#inputFigures {
+display: inline-block !important;
+vertical-align: bottom !important;
+flex: 0 0 auto !important;
+width: 360px !important;
+margin-top: 0 !important;
+padding: 18px !important;
+background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%);
+border: 1px solid #d4dce6;
+border-radius: 8px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+transition: box-shadow 0.3s ease;
+min-height: 568px;
+}#inputFigures:hover {
+box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}/* 中央3D模型显示区 - 卡片式设计 */
+#modelAndControls {
+display: inline-block !important;
+vertical-align: bottom !important;
+flex: 0 0 auto !important;
+margin-top: 0 !important;
+padding: 18px !important;
+background: #ffffff;
+border: 1px solid #d4dce6;
+border-radius: 8px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+transition: box-shadow 0.3s ease;
+}#modelAndControls:hover {
+box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}/* 3D模型容器 */
+#braidModelContainer {
+position: relative !important;
+margin-top: 0 !important;
+margin-bottom: 12px !important;
+padding-top: 0 !important;
+height: 500px !important;
+background: #fafbfc;
+border: 1px solid #e1e8ed;
+border-radius: 6px;
+overflow: hidden;
+}#braidModel {
+position: absolute !important;
+height: 500px !important;
+}/* 按钮组样式 */
+#navButtons {
+margin-top: 12px !important;
+display: flex;
+justify-content: center;
+gap: 6px;
+}/* 通用按钮样式 - 微渐变+柔和阴影 */
+button {
+font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+white-space: nowrap;
+padding: 8px 16px !important;
+border: none !important;
+border-radius: 5px !important;
+background: linear-gradient(to bottom, #5B9BD5 0%, #4A89C3 100%) !important;
+color: white !important;
+font-weight: 500;
+cursor: pointer;
+transition: all 0.25s ease;
+box-shadow: 0 2px 6px rgba(91, 155, 213, 0.25);
+}button:hover:not(:disabled) {
+background: linear-gradient(to bottom, #4A89C3 0%, #3A79B3 100%) !important;
+transform: translateY(-1px);
+box-shadow: 0 4px 10px rgba(91, 155, 213, 0.35);
+}button:active:not(:disabled) {
+transform: translateY(0);
+box-shadow: 0 2px 4px rgba(91, 155, 213, 0.25);
+}button:disabled {
+opacity: 0.55;
+cursor: not-allowed;
+background: linear-gradient(to bottom, #95a5a6 0%, #7f8c8d 100%) !important;
+}/* 3D控制按钮 - 圆角方形 */
+.braid3dButton {
+width: 38px !important;
+height: 38px !important;
+padding: 7px !important;
+border-radius: 6px !important;
+background: linear-gradient(to bottom, #70B9EB 0%, #5B9BD5 100%) !important;
+box-shadow: 0 2px 6px rgba(112, 185, 235, 0.25);
+}.braid3dButton:hover:not(:disabled) {
+background: linear-gradient(to bottom, #5B9BD5 0%, #4A89C3 100%) !important;
+transform: scale(1.05) translateY(-1px);
+}/* 输入框样式美化 */
+input[type="number"],
+input[type="text"] {
+padding: 7px 10px !important;
+border: 1px solid #d4dce6 !important;
+border-radius: 5px !important;
+font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+transition: border-color 0.25s ease, box-shadow 0.25s ease;
+background: white;
+}input[type="number"]:focus,
+input[type="text"]:focus {
+outline: none;
+border-color: #5B9BD5 !important;
+box-shadow: 0 0 0 3px rgba(91, 155, 213, 0.12);
+}/* 下拉选择框美化 */
+select {
+padding: 7px 12px !important;
+border: 1px solid #d4dce6 !important;
+border-radius: 5px !important;
+font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+background: white;
+cursor: pointer;
+transition: border-color 0.25s ease;
+}select:focus {
+outline: none;
+border-color: #5B9BD5 !important;
+box-shadow: 0 0 0 3px rgba(91, 155, 213, 0.12);
+}/* 线程圆盘容器美化 */
+#threadPoss {
+margin: 15px 0;
+border: 1px solid #e1e8ed;
+border-radius: 6px;
+overflow: hidden;
+padding: 10px;
+background: #fafbfc;
+box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) inset;
+min-height: 380px;
+}/* 颜色选择和图表区 - 卡片式 */
+#lowerHalf {
+width: 772px !important;
+clear: both !important;
+margin-top: 20px;
+margin-left: 0 !important;
+margin-right: auto;
+display: block !important;
+background: #ffffff;
+padding: 18px;
+border: 1px solid #d4dce6;
+border-radius: 8px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}#colourPickers {
+float: right !important;
+width: 320px !important;
+}#colLists {
+width: 113px !important;
+}#diagrams {
+display: inline-block !important;
+float: left;
+}/* 弹窗美化 */
+.cdoPopup {
+position: fixed !important;
+z-index: 1000 !important;
+background: white;
+border: 1px solid #d4dce6 !important;
+border-radius: 8px !important;
+padding: 18px !important;
+box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
+}.cdoPopup h1 {
+color: #2c3e50;
+font-weight: 600;
+padding-bottom: 10px;
+border-bottom: 2px solid #5B9BD5;
+margin-bottom: 15px;
+}/* 清除浮动 */
+#lowerHalf::after {
+content: "";
+display: table;
+clear: both;
+}/* 表单行内元素间距 */
+.inline {
+display: inline-block;
+margin-right: 8px;
+}/* 颜色样本美化 */
+.colSample {
+border-radius: 4px !important;
+box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+transition: transform 0.2s ease, box-shadow 0.2s ease;
+}.colSample:hover {
+transform: scale(1.08);
+box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}/* DMC编号颜色样本块 - 修复初始化时尺寸异常 */
+#dmcNumberSample {
+border-radius: 16px !important;
+width: 180px !important;
+height: 30px !important;
+max-height: 80px !important;
+min-height: 60px !important;
+margin-top: 10px;
+box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}/* Farbtastic色环选择器 - 使用经典CSS渐变 */
+.farbtastic .wheel {
+width: 195px !important;
+height: 195px !important;
+border-radius: 50% !important;
+background: conic-gradient(
+from 0deg,
+#ff0000 0deg,
+#ffff00 60deg,
+#00ff00 120deg,
+#00ffff 180deg,
+#0000ff 240deg,
+#ff00ff 300deg,
+#ff0000 360deg
+) !important;
+}/* 中间镂空创建圆环效果 */
+.farbtastic .wheel::before {
+content: '' !important;
+position: absolute !important;
+top: 47px !important;
+left: 47px !important;
+width: 101px !important;
+height: 101px !important;
+background: white !important;
+border-radius: 4px !important;
+}.farbtastic .color {
+z-index: 1 !important;
+}.farbtastic .overlay {
+background: linear-gradient(to right, white, transparent),
+linear-gradient(to top, black, transparent) !important;
+background-blend-mode: multiply !important;
+z-index: 2 !important;
+}.farbtastic .marker {
+width: 17px !important;
+height: 17px !important;
+margin: -8px 0 0 -8px !important;
+border: 2px solid white !important;
+border-radius: 50% !important;
+box-shadow: 0 0 3px rgba(0, 0, 0, 0.8) !important;
+background: none !important;
+z-index: 10 !important;
+}/* 微妙的加载动画 */
+@keyframes fadeInUp {
+from {
+opacity: 0;
+transform: translateY(15px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}#main {
+animation: fadeInUp 0.4s ease-out;
+}/* Canvas元素边框 */
+canvas {
+display: block;
+}/* ============================================
+Immersive Kumihimo atelier layer
+============================================ */
+:root {
+--museum-bg: #090807;
+--museum-panel: rgba(19, 18, 16, 0.78);
+--museum-panel-strong: rgba(27, 25, 22, 0.9);
+--museum-line: rgba(226, 196, 143, 0.24);
+--museum-line-strong: rgba(226, 196, 143, 0.48);
+--museum-gold: #d8b46a;
+--museum-gold-soft: #f0d99a;
+--museum-text: #f5efe2;
+--museum-muted: #a79b86;
+--museum-red: #9d4236;
+--museum-cyan: #8bbec1;
+}html {
+min-height: 100%;
+background: var(--museum-bg);
+}body {
+margin: 0;
+color: var(--museum-text);
+background:
+radial-gradient(circle at 18% 80%, rgba(139, 190, 193, 0.13), transparent 34%),
+linear-gradient(140deg, #050504 0%, #11100e 45%, #050504 100%);
+overflow-x: auto;
+}body::before {
+content: "";
+position: fixed;
+inset: 0;
+z-index: -1;
+opacity: 0.28;
+pointer-events: none;
+background-image:
+linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+background-size: 46px 46px, 46px 46px;
+mask-image: radial-gradient(circle at center, black 0%, transparent 76%);
+}#heroIntro {
+position: fixed;
+inset: 0;
+z-index: 5000;
+display: block;
+min-height: 100vh;
+overflow: hidden;
+background:
+radial-gradient(circle at 50% 48%, rgba(79, 73, 57, 0.16), transparent 36%),
+radial-gradient(circle at 8% 18%, rgba(216, 180, 106, 0.08), transparent 24%),
+radial-gradient(circle at 84% 28%, rgba(139, 190, 193, 0.07), transparent 25%),
+linear-gradient(145deg, #030303 0%, #11100d 42%, #050504 100%);
+transition: opacity 0.75s ease, visibility 0.75s ease;
+}#heroIntro::before,
+#heroIntro::after {
+content: "";
+position: absolute;
+pointer-events: none;
+}#heroIntro::before {
+inset: 0;
+opacity: 0.48;
+background:
+repeating-linear-gradient(112deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 9px),
+repeating-linear-gradient(18deg, rgba(216,180,106,0.025) 0 1px, transparent 1px 13px),
+radial-gradient(ellipse at 36% 20%, rgba(255,255,255,0.08), transparent 42%),
+radial-gradient(ellipse at 70% 78%, rgba(255,255,255,0.045), transparent 46%);
+filter: blur(0.15px);
+}#heroIntro::after {
+inset: 0;
+background:
+linear-gradient(90deg, rgba(0,0,0,0.6), transparent 18%, transparent 82%, rgba(0,0,0,0.52)),
+linear-gradient(180deg, rgba(0,0,0,0.38), transparent 28%, transparent 78%, rgba(0,0,0,0.48));
+}body.workbench-entered #heroIntro {
+opacity: 0;
+visibility: hidden;
+pointer-events: none;
+}.hero-shell {
+position: relative;
+z-index: 1;
+width: 100%;
+height: 100vh;
+min-height: 680px;
+color: #ece8c7;
+font-family: "Courier New", ui-monospace, SFMono-Regular, Menlo, monospace;
+}.hero-kicker,
+.workbench-kicker,
+.panel-kicker {
+color: var(--museum-gold);
+font-size: 12px;
+letter-spacing: 0.18em;
+text-transform: uppercase;
+}.hero-top-nav {
+position: absolute;
+top: 34px;
+right: 54px;
+z-index: 3;
+color: rgba(236, 232, 199, 0.86);
+font-size: 18px;
+line-height: 1.15;
+letter-spacing: 0;
+text-align: left;
+text-transform: uppercase;
+}.hero-center {
+position: absolute;
+left: 50%;
+top: 39%;
+z-index: 4;
+width: min(78vw, 1120px);
+transform: translate(-50%, -50%);
+text-align: center;
+}.hero-kicker {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 18px;
+color: rgba(236, 232, 199, 0.92);
+font-size: clamp(15px, 1.25vw, 22px);
+letter-spacing: 0.08em;
+text-transform: uppercase;
+}.hero-kicker::after {
+content: "";
+width: min(11vw, 120px);
+height: 1px;
+background: rgba(236, 232, 199, 0.72);
+}.hero-title {
+margin: 22px 0 18px;
+color: #f1edc9;
+font-family: Georgia, "Times New Roman", serif;
+font-size: clamp(76px, 13vw, 190px);
+line-height: 0.82;
+font-weight: 500;
+letter-spacing: 0;
+text-shadow: 0 18px 42px rgba(0, 0, 0, 0.58);
+}.hero-copy-row {
+display: none;
+}#enterWorkbench {
+display: inline-flex;
+align-items: center;
+gap: 8px;
+margin-top: 10px;
+padding: 0 !important;
+color: rgba(236, 232, 199, 0.92) !important;
+background: transparent !important;
+border: 0 !important;
+border-radius: 0 !important;
+box-shadow: none !important;
+font-size: 15px !important;
+line-height: 1.12;
+font-family: inherit;
+text-decoration: underline;
+text-underline-offset: 4px;
+}.hero-art {
+position: absolute;
+inset: 0;
+z-index: 2;
+pointer-events: none;
+}.hero-artifact {
+position: absolute;
+display: grid;
+place-items: center;
+width: var(--w);
+height: var(--h);
+left: var(--x);
+top: var(--y);
+transform: translate(-50%, -50%) rotate(var(--r, 0deg)) scale(1.5);
+filter: drop-shadow(0 28px 32px rgba(0, 0, 0, 0.72));
+}.hero-artifact img {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+object-fit: contain;
+object-position: center;
+user-select: none;
+pointer-events: none;
+}.hero-artifact::before,
+.hero-artifact::after {
+content: "";
+position: absolute;
+display: none;
+}.hero-artifact::before {
+inset: 8%;
+border-radius: var(--shape, 44% 56% 50% 50%);
+background:
+repeating-linear-gradient(var(--thread-angle, 90deg), rgba(255,255,255,0.13) 0 1px, transparent 1px 7px),
+radial-gradient(circle at 32% 22%, rgba(255,255,255,0.34), transparent 22%),
+linear-gradient(145deg, var(--c1), var(--c2));
+border: 1px solid rgba(241, 237, 201, 0.18);
+box-shadow:
+inset 0 0 28px rgba(255,255,255,0.08),
+inset 0 -18px 34px rgba(0,0,0,0.22);
+}.hero-artifact::after {
+width: 54%;
+height: 18%;
+border-top: 5px solid rgba(241, 237, 201, 0.76);
+border-bottom: 5px solid rgba(241, 237, 201, 0.16);
+border-radius: 999px;
+transform: rotate(var(--band-r, 0deg));
+opacity: 0.9;
+}.hero-artifact[data-slot="1"] { --x: 16%; --y: 23%; --w: 170px; --h: 245px; --r: -8deg; --c1: #2b2019; --c2: #876141; --shape: 48% 52% 46% 54%; --band-r: 90deg; }
+.hero-artifact[data-slot="2"] { --x: 48%; --y: 20%; --w: 135px; --h: 300px; --r: 1deg; --c1: #eadfca; --c2: #7f7566; --shape: 48% 52% 58% 42%; --band-r: 90deg; }
+.hero-artifact[data-slot="3"] { --x: 84%; --y: 22%; --w: 210px; --h: 245px; --r: 4deg; --c1: #a59c61; --c2: #37402b; --shape: 50% 50% 45% 45%; --band-r: 0deg; }
+.hero-artifact[data-slot="4"] { --x: 16%; --y: 76%; --w: 165px; --h: 245px; --r: 2deg; --c1: #f0de9f; --c2: #70513c; --shape: 48% 52% 56% 44%; --band-r: -28deg; }
+.hero-artifact[data-slot="5"] { --x: 50%; --y: 72%; --w: 175px; --h: 175px; --r: -3deg; --c1: #b88759; --c2: #39251d; --shape: 50%; --thread-angle: 0deg; --band-r: 90deg; }
+.hero-artifact[data-slot="6"] { --x: 84%; --y: 75%; --w: 180px; --h: 235px; --r: 8deg; --c1: #c46c52; --c2: #263b44; --shape: 52% 48% 56% 44%; --band-r: 26deg; }#main {
+width: min(1440px, calc(100vw - 48px));
+min-width: 1120px;
+margin: 0 auto;
+padding: 22px 0 30px;
+animation: none;
+}#content {
+width: 100%;
+top: 0;
+margin: 0;
+color: var(--museum-text);
+}.page-header {
+display: flex;
+align-items: flex-end;
+justify-content: space-between;
+min-height: 64px;
+margin-bottom: 18px;
+border-bottom: 1px solid var(--museum-line);
+}h1.page-title {
+margin: 0 0 14px;
+padding: 0;
+color: var(--museum-text);
+text-align: left;
+font-size: 28px;
+letter-spacing: 0.03em;
+}h1.page-title::before {
+content: none;
+}.workbench-brand {
+display: block;
+margin-bottom: 7px;
+padding: 0;
+border: 0;
+background: transparent;
+color: var(--museum-gold);
+font-size: 11px;
+font-weight: 700;
+line-height: 1.2;
+letter-spacing: 0.22em;
+text-align: left;
+text-transform: uppercase;
+cursor: pointer;
+opacity: 0.92;
+transition: color 160ms ease, opacity 160ms ease, text-shadow 160ms ease;
+}.workbench-brand:hover,
+.workbench-brand:focus-visible {
+color: rgba(245, 239, 226, 0.96);
+opacity: 1;
+text-shadow: 0 0 16px rgba(216, 180, 106, 0.28);
+outline: none;
+}h1.page-title::after {
+display: none;
+}#content-wrapper {
+position: relative;
+display: grid !important;
+grid-template-columns: 388px minmax(680px, 1fr);
+gap: 18px;
+align-items: stretch !important;
+}#inputFigures,
+#modelAndControls,
+#lowerHalf,
+.cdoPopup {
+color: var(--museum-text);
+background:
+linear-gradient(180deg, rgba(34, 31, 27, 0.86), rgba(14, 13, 12, 0.78)) !important;
+border: 1px solid var(--museum-line) !important;
+border-radius: 8px !important;
+box-shadow: 0 20px 70px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+backdrop-filter: blur(18px);
+}#inputFigures {
+width: auto !important;
+min-height: auto;
+padding: 18px !important;
+}#inputFigures::before,
+#modelAndControls::before,
+#lowerHalf::before {
+display: block;
+margin-bottom: 14px;
+color: var(--museum-gold);
+font-size: 11px;
+letter-spacing: 0.18em;
+text-transform: uppercase;
+}#inputFigures::before { content: "01 THREADS / 02 MARUDAI"; }
+#modelAndControls::before { content: "3D MODEL STAGE"; }
+#lowerHalf::before { content: "03 PALETTE / 04 SEQUENCE"; }#modelAndControls {
+position: relative;
+display: flex !important;
+flex-direction: column;
+min-height: 690px;
+padding: 18px !important;
+overflow: hidden;
+}#modelAndControls::after {
+content: "drag to orbit · click strand to color";
+position: absolute;
+right: 22px;
+top: 18px;
+color: rgba(245, 239, 226, 0.48);
+font-size: 11px;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+}#braidModelContainer {
+flex: 1 1 auto;
+width: 100% !important;
+min-height: 600px;
+height: auto !important;
+margin: 0 0 14px !important;
+background:
+radial-gradient(circle at 50% 46%, rgba(216, 180, 106, 0.12), transparent 36%),
+radial-gradient(circle at 50% 76%, rgba(139, 190, 193, 0.08), transparent 24%),
+linear-gradient(180deg, #11100e 0%, #070706 100%) !important;
+border: 1px solid rgba(216, 180, 106, 0.14) !important;
+border-radius: 8px;
+box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.56);
+cursor: grab;
+}#braidModelContainer.is-dragging {
+cursor: grabbing;
+}#braidModel {
+inset: 0;
+width: 100% !important;
+height: 100% !important;
+}#braidModel canvas {
+width: 100% !important;
+height: 100% !important;
+}#threadPoss {
+width: 340px;
+min-height: 360px;
+background:
+radial-gradient(circle at center, rgba(216, 180, 106, 0.09), transparent 62%),
+rgba(5, 5, 4, 0.42) !important;
+border-color: rgba(216, 180, 106, 0.2);
+box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.42);
+}#lowerActions {
+border-top: 1px solid rgba(216, 180, 106, 0.18);
+margin-top: 12px;
+padding-top: 14px;
+}#lowerHalf {
+width: auto !important;
+margin-top: 18px;
+padding: 16px 18px 18px;
+}#colourPickers {
+width: 410px !important;
+}button {
+color: var(--museum-text) !important;
+background: rgba(216, 180, 106, 0.12) !important;
+border: 1px solid rgba(216, 180, 106, 0.38) !important;
+border-radius: 999px !important;
+box-shadow: none !important;
+}button:hover:not(:disabled) {
+color: #1a1308 !important;
+background: linear-gradient(135deg, #f1d58c 0%, #b9853a 100%) !important;
+box-shadow: 0 10px 28px rgba(216, 180, 106, 0.18) !important;
+}.braid3dButton {
+width: 40px !important;
+height: 40px !important;
+border-radius: 50% !important;
+background: rgba(245, 239, 226, 0.08) !important;
+}input[type="number"],
+input[type="text"],
+select {
+color: var(--museum-text);
+background: rgba(0, 0, 0, 0.32) !important;
+border: 1px solid rgba(216, 180, 106, 0.26) !important;
+}select option {
+color: #1d1a16;
+}#repeatStep,
+#numThreads {
+color: rgba(245, 239, 226, 0.82);
+}.colSample {
+border: 1px solid rgba(255, 255, 255, 0.36);
+}.selectedColour {
+outline: 2px solid var(--museum-gold);
+outline-offset: 2px;
+}.startInstructions div p {
+color: var(--museum-text);
+background: rgba(9, 8, 7, 0.72);
+border: 1px solid rgba(216, 180, 106, 0.24);
+backdrop-filter: blur(12px);
+}.startInstructions.hideMe {
+pointer-events: none !important;
+}.diagramCanvas,
+#threadPossCanvas,
+#dmcPaletteCanvas {
+filter: drop-shadow(0 8px 18px rgba(0,0,0,0.34));
+}@keyframes heroOrbit {
+to { transform: rotate(360deg); }
+}@media (max-width: 1180px) {
+#main {
+min-width: 0;
+width: min(100vw - 28px, 980px);
+}#content-wrapper {
+grid-template-columns: 1fr;
+}#inputFigures {
+order: 2;
+}#modelAndControls {
+min-height: 560px;
+}#braidModelContainer {
+min-height: 480px;
+}#lowerHalf {
+overflow-x: auto;
+}
+}@media (max-width: 760px) {
+.hero-shell {
+min-height: 760px;
+}.hero-title {
+font-size: clamp(64px, 22vw, 96px);
+}.hero-center {
+top: 38%;
+width: calc(100vw - 32px);
+}.hero-artifact {
+opacity: 0.72;
+transform: translate(-50%, -50%) rotate(var(--r, 0deg)) scale(1.08);
+}.hero-artifact[data-slot="1"] { --x: 18%; --y: 18%; }
+.hero-artifact[data-slot="2"] { --x: 50%; --y: 16%; }
+.hero-artifact[data-slot="3"] { --x: 84%; --y: 19%; }
+.hero-artifact[data-slot="4"] { --x: 18%; --y: 73%; }
+.hero-artifact[data-slot="5"] { --x: 50%; --y: 76%; }
+.hero-artifact[data-slot="6"] { --x: 84%; --y: 74%; }.hero-top-nav {
+top: 20px;
+right: 20px;
+font-size: 13px;
+}
+}/* ============================================
+Atelier layout v2: model-as-background + bottom timeline
+============================================ */
+#main {
+width: min(1500px, calc(100vw - 32px));
+min-width: 1120px;
+height: 100vh;
+min-height: 720px;
+padding: 16px 0;
+box-sizing: border-box;
+}#content {
+height: 100%;
+}.page-header {
+min-height: 36px;
+margin-bottom: 6px;
+padding: 8px 12px 7px;
+border: 1px solid rgba(245, 239, 226, 0.1);
+border-radius: 7px;
+background:
+repeating-linear-gradient(112deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 9px),
+repeating-linear-gradient(18deg, rgba(216,180,106,0.018) 0 1px, transparent 1px 13px),
+radial-gradient(circle at 52% 50%, rgba(79, 73, 57, 0.1), transparent 42%),
+rgba(5, 5, 4, 0.78);
+box-shadow:
+inset 0 1px 0 rgba(255, 255, 255, 0.04),
+inset 0 0 38px rgba(0, 0, 0, 0.24);
+backdrop-filter: blur(18px) saturate(112%);
+-webkit-backdrop-filter: blur(18px) saturate(112%);
+}h1.page-title {
+margin-bottom: 0;
+font-size: 23px;
+}#content-wrapper {
+position: relative;
+display: block !important;
+height: calc(100vh - 84px);
+min-height: 0;
+margin-bottom: 0;
+isolation: isolate;
+overflow: hidden;
+}#content-wrapper::before {
+content: "";
+position: absolute;
+inset: -70px -24px -60px 0;
+z-index: -2;
+pointer-events: none;
+background:
+radial-gradient(circle at 58% 46%, rgba(216, 180, 106, 0.16), transparent 30%),
+radial-gradient(circle at 68% 68%, rgba(139, 190, 193, 0.1), transparent 26%),
+linear-gradient(135deg, rgba(255, 255, 255, 0.018), transparent 48%);
+}#inputFigures,
+#palettePanel,
+#sequencePanel,
+#statusPanel,
+.cdoPopup {
+background: rgba(12, 12, 10, 0.48) !important;
+border: 1px solid rgba(245, 239, 226, 0.12) !important;
+border-radius: 7px !important;
+box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16) !important;
+backdrop-filter: blur(18px) saturate(120%);
+-webkit-backdrop-filter: blur(18px) saturate(120%);
+}.export-dialog-backdrop {
+position: fixed;
+inset: 0;
+z-index: 1000;
+display: none;
+align-items: center;
+justify-content: center;
+padding: 24px;
+background: rgba(0, 0, 0, 0.56);
+backdrop-filter: blur(10px);
+-webkit-backdrop-filter: blur(10px);
+}.export-dialog-backdrop.is-open {
+display: flex;
+}.export-dialog {
+width: min(420px, calc(100vw - 48px));
+padding: 20px;
+box-sizing: border-box;
+color: rgba(245, 239, 226, 0.9);
+background: rgba(12, 12, 10, 0.72);
+border: 1px solid rgba(245, 239, 226, 0.16);
+border-radius: 8px;
+box-shadow: 0 18px 54px rgba(0, 0, 0, 0.36);
+}.export-dialog h2 {
+margin: 0 0 16px;
+color: rgba(240, 217, 154, 0.92);
+font-size: 14px;
+letter-spacing: 0.14em;
+text-transform: uppercase;
+}.export-dialog label {
+display: grid;
+gap: 7px;
+margin-bottom: 12px;
+font-size: 12px;
+color: rgba(245, 239, 226, 0.72);
+}.export-dialog input[type="text"] {
+width: 100%;
+min-height: 38px;
+padding: 8px 10px;
+box-sizing: border-box;
+color: rgba(245, 239, 226, 0.95);
+background: rgba(0, 0, 0, 0.42);
+border: 1px solid rgba(216, 180, 106, 0.42);
+border-radius: 6px;
+font-size: 13px;
+}.export-dialog .export-option {
+display: flex;
+grid-template-columns: none;
+align-items: center;
+gap: 8px;
+}.export-dialog .export-preview {
+min-height: 18px;
+margin: 10px 0 16px;
+color: rgba(216, 180, 106, 0.86);
+font-size: 11px;
+word-break: break-all;
+}.export-dialog-actions {
+display: flex;
+justify-content: flex-end;
+gap: 8px;
+}#modelAndControls {
+position: absolute;
+inset: 0;
+z-index: 1;
+min-height: 0;
+padding: 0 !important;
+overflow: visible;
+background: transparent !important;
+border: 0 !important;
+border-radius: 0 !important;
+box-shadow: none !important;
+backdrop-filter: none;
+}#modelAndControls::before {
+content: "";
+display: none;
+}#modelAndControls::after {
+right: 8px;
+top: 0;
+opacity: 0.72;
+}#inputFigures {
+position: absolute;
+left: 0;
+top: 0;
+z-index: 25;
+width: 420px !important;
+height: 430px;
+min-height: 0;
+padding: 14px !important;
+display: flex !important;
+flex-direction: column;
+box-sizing: border-box;
+}#inputFigures::before {
+margin-bottom: 10px;
+color: rgba(240, 217, 154, 0.9);
+font-size: 10px;
+}#threadToolbar {
+display: grid;
+grid-template-columns: auto auto auto auto minmax(0, 1fr) auto;
+align-items: center;
+gap: 7px;
+min-width: 0;
+margin-bottom: 8px;
+font-size: 12px;
+}#threadToolbar button {
+flex: 0 0 auto;
+padding-left: 10px !important;
+padding-right: 10px !important;
+font-size: 12px !important;
+}#remoteSaveForm {
+margin: 0;
+}#importProjectFile {
+display: none;
+}#threadCountField {
+display: inline-flex;
+align-items: center;
+gap: 5px;
+color: rgba(245, 239, 226, 0.82);
+font-size: 12px;
+white-space: nowrap;
+}#numThreads.shortNum {
+width: 52px;
+}#threadPoss {
+width: 276px;
+height: 276px;
+min-height: 276px;
+margin: auto auto;
+padding: 0;
+border: 1px solid rgba(245, 239, 226, 0.1);
+border-radius: 6px;
+background: rgba(0, 0, 0, 0.18) !important;
+box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.34);
+overflow: hidden;
+}#threadPossRel,
+.threadPossLayer {
+width: 276px;
+height: 276px;
+}#stepComplete {
+position: static !important;
+min-width: 76px;
+grid-column: 6;
+justify-self: end;
+}#lowerActions {
+display: grid;
+grid-template-columns: minmax(0, 1fr) auto auto;
+gap: 7px;
+align-items: center;
+margin-top: 14px;
+padding-top: 14px;
+padding-bottom: 6px;
+border-top: 1px solid rgba(245, 239, 226, 0.12);
+}#repeatStep {
+display: grid;
+grid-template-columns: auto 58px auto auto auto 58px auto;
+gap: 4px;
+align-items: center;
+margin: 0;
+padding: 0;
+border-right: 0;
+font-size: 10px;
+line-height: 1.2;
+color: rgba(245, 239, 226, 0.76);
+}.repeat-to-step {
+min-width: 12px;
+text-align: center;
+color: rgba(216, 180, 106, 0.95);
+font-weight: 700;
+}#repeatStep br {
+display: none;
+}#repeatAdd,
+#undo {
+justify-self: start;
+}#undo {
+justify-self: end;
+}#lowerActions button {
+min-height: 30px !important;
+padding: 5px 8px !important;
+font-size: 11px !important;
+}#repeatStep input.shortNum {
+width: 58px !important;
+min-height: 32px;
+padding: 5px 4px 5px 8px !important;
+font-size: 13px;
+font-weight: 600;
+color: rgba(245, 239, 226, 0.92) !important;
+background: rgba(0, 0, 0, 0.46) !important;
+border-color: rgba(216, 180, 106, 0.46) !important;
+text-align: left;
+}#braidModelContainer {
+position: absolute !important;
+inset: 0;
+width: 100% !important;
+min-height: 0;
+height: calc(100% - 4px) !important;
+margin: 0 !important;
+border: 0 !important;
+border-radius: 0;
+background:
+radial-gradient(circle at 50% 48%, rgba(79, 73, 57, 0.16), transparent 36%),
+radial-gradient(circle at 8% 18%, rgba(216, 180, 106, 0.08), transparent 24%),
+radial-gradient(circle at 84% 28%, rgba(139, 190, 193, 0.07), transparent 25%),
+linear-gradient(145deg, #030303 0%, #11100d 42%, #050504 100%) !important;
+box-shadow: none;
+overflow: hidden;
+}#braidModelContainer::before,
+#braidModelContainer::after {
+content: "";
+position: absolute;
+inset: 0;
+pointer-events: none;
+}#braidModelContainer::before {
+z-index: 0;
+opacity: 0.48;
+background:
+repeating-linear-gradient(112deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 9px),
+repeating-linear-gradient(18deg, rgba(216,180,106,0.025) 0 1px, transparent 1px 13px),
+radial-gradient(ellipse at 36% 20%, rgba(255,255,255,0.08), transparent 42%),
+radial-gradient(ellipse at 70% 78%, rgba(255,255,255,0.045), transparent 46%);
+filter: blur(0.15px);
+}#braidModelContainer::after {
+z-index: 2;
+opacity: 0.2;
+background:
+repeating-linear-gradient(112deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 9px),
+repeating-linear-gradient(18deg, rgba(216,180,106,0.03) 0 1px, transparent 1px 13px),
+radial-gradient(ellipse at 36% 20%, rgba(255,255,255,0.08), transparent 42%),
+radial-gradient(ellipse at 70% 78%, rgba(255,255,255,0.045), transparent 46%);
+mix-blend-mode: screen;
+}#braidModel {
+position: absolute;
+inset: 0;
+z-index: 1;
+}#navButtons {
+position: absolute;
+right: 14px;
+bottom: 176px;
+z-index: 35;
+width: auto;
+max-width: none;
+margin: 0 !important;
+padding: 6px;
+gap: 6px;
+border: 1px solid rgba(245, 239, 226, 0.1);
+border-radius: 999px;
+background: rgba(10, 10, 9, 0.32);
+backdrop-filter: blur(14px) saturate(118%);
+-webkit-backdrop-filter: blur(14px) saturate(118%);
+}#lowerHalf {
+display: contents !important;
+position: static;
+width: auto !important;
+margin: 0;
+padding: 0;
+}#lowerHalf::before {
+content: none;
+}#palettePanel,
+#sequencePanel,
+#statusPanel {
+position: absolute;
+z-index: 24;
+min-width: 0;
+}#palettePanel::before,
+#sequencePanel::before,
+#statusPanel::before {
+display: block;
+margin-bottom: 5px;
+color: rgba(240, 217, 154, 0.86);
+font-size: 10px;
+letter-spacing: 0.18em;
+text-transform: uppercase;
+}#palettePanel::before { content: "03 PALETTE"; }
+#sequencePanel::before { content: "04 SEQUENCE"; }
+#statusPanel::before { content: "STATUS"; }#palettePanel {
+left: 0;
+bottom: 0;
+width: 420px;
+height: 170px;
+padding: 14px;
+box-sizing: border-box;
+display: grid;
+grid-template-columns: 1fr;
+grid-template-rows: auto 1fr;
+column-gap: 0;
+row-gap: 8px;
+align-items: start;
+overflow: hidden;
+}#palettePanel::before {
+grid-column: 1 / -1;
+margin-bottom: 0;
+}#palettePanel > .inline:first-child {
+display: none !important;
+}#atelierPalette {
+display: grid;
+grid-template-columns: 48px 1fr;
+gap: 7px 9px;
+align-items: center;
+}#atelierCurrentColour {
+grid-row: 1 / 3;
+width: 48px;
+height: 48px;
+border: 1px solid rgba(245, 239, 226, 0.22);
+border-radius: 6px;
+background: #ff0000;
+box-shadow: inset 0 0 18px rgba(0,0,0,0.28);
+}#atelierColourPicker {
+grid-column: 2;
+width: 100%;
+height: 28px;
+padding: 0;
+border: 1px solid rgba(245, 239, 226, 0.18);
+border-radius: 6px;
+background: transparent;
+}#atelierColourModeToggle {
+grid-column: 2;
+width: 100%;
+min-height: 24px !important;
+padding: 3px 9px !important;
+border-color: rgba(245, 239, 226, 0.18) !important;
+background: rgba(245, 239, 226, 0.06) !important;
+color: rgba(245, 239, 226, 0.72) !important;
+font-size: 11px !important;
+}#atelierColourModeToggle.is-active {
+border-color: rgba(240, 217, 154, 0.78) !important;
+background: rgba(216, 180, 106, 0.18) !important;
+color: rgba(250, 236, 190, 0.98) !important;
+}body.atelier-colour-mode #threadPossCanvas,
+body.atelier-colour-mode #braidModelContainer {
+cursor: crosshair !important;
+}#atelierSwatches {
+grid-column: 1 / -1;
+display: grid;
+grid-template-columns: repeat(8, 22px);
+justify-content: space-between;
+gap: 6px 5px;
+}.atelier-swatch {
+width: 22px;
+height: 22px;
+aspect-ratio: auto;
+min-width: 0;
+min-height: 0 !important;
+padding: 0 !important;
+border: 1px solid rgba(245, 239, 226, 0.18);
+border-radius: 999px;
+background: var(--swatch-colour) !important;
+cursor: pointer;
+box-shadow: inset 0 0 10px rgba(0,0,0,0.28);
+}.atelier-swatch:hover,
+.atelier-swatch:focus-visible {
+background: var(--swatch-colour) !important;
+border-color: rgba(245, 239, 226, 0.7) !important;
+outline: 2px solid rgba(240, 217, 154, 0.78);
+outline-offset: 3px;
+box-shadow:
+0 0 0 4px rgba(240, 217, 154, 0.12),
+inset 0 0 10px rgba(0,0,0,0.28) !important;
+transform: scale(1.04);
+}.atelier-swatch.is-selected {
+outline: 2px solid rgba(240, 217, 154, 0.85);
+outline-offset: 2px;
+}#atelierPaletteHint {
+display: none;
+}#colourSources {
+grid-column: 1;
+grid-row: 2;
+transform: none;
+transform-origin: top left;
+width: 194px;
+height: 194px;
+overflow: hidden;
+display: none !important;
+}#colourSourceSelect {
+grid-column: 2;
+grid-row: 2;
+width: 100%;
+max-width: 100%;
+margin-top: 0;
+display: none !important;
+}#colLists {
+display: block !important;
+grid-column: 2;
+grid-row: 2;
+width: auto !important;
+max-height: 130px;
+margin-top: 52px;
+overflow: auto;
+display: none !important;
+}#sequencePanel {
+left: 436px;
+right: 0;
+bottom: 0;
+min-height: 170px;
+max-height: 170px;
+padding: 14px 132px 14px 14px;
+box-sizing: border-box;
+overflow: hidden;
+transition: max-height 220ms ease, min-height 220ms ease, background-color 220ms ease;
+}#sequencePanel.is-expanded {
+min-height: 306px;
+max-height: 306px;
+}#sequencePanel.is-collapsed {
+min-height: 170px;
+max-height: 170px;
+}#sequenceToggle {
+position: absolute;
+top: 10px;
+right: 14px;
+z-index: 2;
+min-width: 64px;
+padding: 6px 11px !important;
+font-size: 11px !important;
+}#diagrams {
+display: grid !important;
+float: none;
+grid-template-columns: repeat(auto-fill, minmax(108px, 108px));
+grid-auto-rows: 118px;
+gap: 12px 14px;
+min-height: 0;
+height: 126px;
+margin: 0;
+overflow: hidden;
+padding: 0;
+}#sequencePanel.is-expanded #diagrams {
+height: 248px;
+overflow-y: auto;
+}.diagramItem {
+position: relative;
+width: 108px;
+height: 118px;
+border-left: 1px solid rgba(216, 180, 106, 0.22);
+padding-left: 6px;
+box-sizing: border-box;
+}.diagramStepLabel {
+position: absolute;
+top: 0;
+left: 10px;
+z-index: 1;
+color: rgba(245, 239, 226, 0.9);
+font-size: 11px;
+line-height: 12px;
+letter-spacing: 0;
+pointer-events: none;
+text-shadow: 0 1px 5px rgba(0, 0, 0, 0.72);
+}.diagramCanvas {
+width: 96px !important;
+height: 96px !important;
+margin: 20px 0 0;
+opacity: 0.86;
+}#statusPanel {
+right: 16px;
+bottom: 18px;
+z-index: 26;
+width: 110px;
+min-height: 66px;
+padding: 10px;
+box-sizing: border-box;
+display: flex;
+flex-direction: column;
+}#statusPanel:has(#progressLine.hideMe) {
+display: none;
+}#progressLine {
+margin-top: 6px;
+}/* Final stage-layer lock: keep every panel positioned by the model stage. */
+#content-wrapper > #inputFigures {
+top: 0 !important;
+right: auto !important;
+bottom: auto !important;
+left: 0 !important;
+}#content-wrapper > #modelAndControls {
+top: 0 !important;
+right: 0 !important;
+bottom: 0 !important;
+left: 0 !important;
+}#content-wrapper #palettePanel {
+left: 0 !important;
+right: auto !important;
+bottom: 0 !important;
+}#content-wrapper #sequencePanel {
+left: 436px !important;
+right: 0 !important;
+bottom: 0 !important;
+}button {
+padding: 7px 13px !important;
+border-radius: 999px !important;
+}.braid3dButton {
+width: 34px !important;
+height: 34px !important;
+padding: 0 !important;
+display: inline-grid;
+place-items: center;
+color: rgba(245, 239, 226, 0.94) !important;
+font-family: Arial, sans-serif;
+font-size: 19px !important;
+line-height: 1 !important;
+background: rgba(245, 239, 226, 0.055) !important;
+border-color: rgba(240, 217, 154, 0.42) !important;
+}.braid3dButton img {
+display: none !important;
+}.braid3dButton::before {
+display: block;
+transform: translateY(-1px);
+text-shadow: 0 0 8px rgba(240, 217, 154, 0.24);
+}#spin::before { content: "↻"; color: rgba(240, 217, 154, 0.96); }
+#closer::before { content: "＋"; color: rgba(245, 239, 226, 0.96); font-size: 21px; }
+#further::before { content: "−"; color: rgba(245, 239, 226, 0.96); font-size: 24px; }
+#up::before { content: "↑"; color: rgba(240, 217, 154, 0.96); }
+#down::before { content: "↓"; color: rgba(240, 217, 154, 0.96); }
+#rotateLeft::before { content: "↶"; color: rgba(240, 217, 154, 0.96); }
+#rotateRight::before { content: "↷"; color: rgba(240, 217, 154, 0.96); }.braid3dButton:hover:not(:disabled) {
+color: #17120a !important;
+border-color: rgba(240, 217, 154, 0.82) !important;
+}#atelierSwatches .atelier-swatch:hover:not(:disabled),
+#atelierSwatches .atelier-swatch:focus-visible:not(:disabled) {
+color: transparent !important;
+background: var(--swatch-colour) !important;
+border-color: rgba(245, 239, 226, 0.7) !important;
+outline: 2px solid rgba(240, 217, 154, 0.78);
+outline-offset: 3px;
+box-shadow:
+0 0 0 4px rgba(240, 217, 154, 0.12),
+inset 0 0 10px rgba(0,0,0,0.28) !important;
+transform: scale(1.04);
+}body.sequence-expanded #navButtons {
+bottom: 304px;
+}input[type="number"],
+input[type="text"],
+select {
+min-height: 34px;
+box-sizing: border-box;
+}@media (max-width: 1180px) {
+#main {
+height: auto;
+min-height: 100vh;
+}#content-wrapper {
+min-height: 840px;
+}#modelAndControls {
+min-height: 0;
+}#inputFigures {
+top: 0 !important;
+right: auto !important;
+bottom: auto !important;
+left: 0 !important;
+height: 430px;
+}#palettePanel {
+left: 0 !important;
+bottom: 0 !important;
+}#sequencePanel {
+left: 436px !important;
+right: 0 !important;
+}
+}
+</style></head>
+<body><section id="heroIntro" aria-label="组纽编绳设计台入口">
+<div class="hero-shell">
+<div class="hero-top-nav">ABOUT<br>KUMIHIMO</div>
+<div class="hero-art" aria-hidden="true">
+<div class="hero-artifact" data-slot="1"><img src="./assets/pic1.png" alt=""></div>
+<div class="hero-artifact" data-slot="2"><img src="./assets/pic2.png" alt=""></div>
+<div class="hero-artifact" data-slot="3"><img src="./assets/pic3.png" alt=""></div>
+<div class="hero-artifact" data-slot="4"><img src="./assets/pic4.png" alt=""></div>
+<div class="hero-artifact" data-slot="5"><img src="./assets/pic5.png" alt=""></div>
+<div class="hero-artifact" data-slot="6"><img src="./assets/pic6.png" alt=""></div>
+</div>
+<div class="hero-center">
+<div class="hero-kicker">KUMIHIMO BRAIDS <span>FROM THREADS TO STRUCTURE</span></div>
+<h1 class="hero-title">Kumihimo</h1>
+<button id="enterWorkbench" type="button">进入工作台</button>
+</div>
+</div>
+</section><div id="main">
+<section id="primary">
+<div id="content" role="main">
+<header class="page-header">
+<h1 class="page-title"><span id="returnHero" class="workbench-brand" role="button" tabindex="0">KUMIHIMO 3D</span>组纽编绳设计工作台</h1>
+</header>
+<div id="content-wrapper">
+<div id="inputFigures">
+<div id="threadToolbar">
+<button type="button" id="saveButton">导出</button>
+<button type="button" id="importButton">导入</button>
+<input id="importProjectFile" type="file" accept=".json,.b3d,application/json">
+<label id="threadCountField"><input id="numThreads" type="number" value="8" class="shortNum"> 股线</label>
+<button type="button" onclick="resetClicked();">重置</button>
+<button id="stepComplete" type="button" onclick="stepCompleteClicked();" disabled="">步骤完成</button>
+</div><div id="threadPoss">
+<div id="threadPossRel" ondrop="drop(event)" ondragover="allowDrop(event)">
+<canvas id="threadPossCanvas" class="threadPossLayer" width="276" height="276"></canvas>
+<div id="marudaiInstructions" class="threadPossLayer startInstructions hideMe" style="opacity: 0;" title="点击隐藏">
+<div><p>在这里移动线束来编织。</p></div>
+</div>
+</div>
+</div>
+<div id="lowerActions">
+<div id="repeatStep" class="inline">
+<span>从</span>
+<input id="repeatFromStep" type="number" maxlength="3" size="3" class="shortNum" min="1" max="1" value="1">
+<span>步到</span>
+<span id="repeatToStepLabel" class="repeat-to-step">1</span>
+<span>步，循环</span>
+<input id="repeatTimes" type="number" maxlength="3" size="3" class="shortNum" min="1" max="999" value="1">
+<span>次</span>
+</div>
+<button id="repeatAdd" type="button" onclick="repeatAddClicked();">执行</button>
+<button id="undo" type="button" onclick="undoClicked();">撤销</button>
+</div>
+</div>
+<div id="modelAndControls">
+<div id="braidModelContainer">
+<div id="braidModel"></div>
+<div id="braidInstructions" class="startInstructions hideMe" style="opacity: 0;" title="点击隐藏">
+<div><p>在这里查看编绳结构并为线束上色。</p></div>
+</div>
+</div>
+<div id="navButtons" class="hCentre">
+<button id="spin" type="button" class="braid3dButton" onclick="spinClicked();" title="旋转" aria-label="旋转"></button>
+<button id="closer" type="button" class="braid3dButton" onclick="closerClicked();" title="拉近" aria-label="拉近"></button>
+<button id="further" type="button" class="braid3dButton" onclick="furtherClicked();" title="推远" aria-label="推远"></button>
+<button id="up" type="button" class="braid3dButton" onclick="upClicked();" title="上移" aria-label="上移"></button>
+<button id="down" type="button" class="braid3dButton" onclick="downClicked();" title="下移" aria-label="下移"></button>
+<button id="rotateLeft" type="button" class="braid3dButton" onclick="rotateLeftClicked();" title="左转" aria-label="左转"></button>
+<button id="rotateRight" type="button" class="braid3dButton" onclick="rotateRightClicked();" title="右转" aria-label="右转"></button>
+</div>
+</div>
+<div id="lowerHalf">
+<div id="palettePanel">
+<div id="atelierPalette" aria-label="当前颜色选择">
+<div id="atelierCurrentColour" title="当前颜色"></div>
+<input id="atelierColourPicker" type="color" value="#ff0000" aria-label="选择颜色">
+<button id="atelierColourModeToggle" type="button" aria-pressed="false">改色模式：关闭</button>
+<div id="atelierSwatches" aria-label="常用颜色"></div>
+<div id="atelierPaletteHint">开启改色模式后，点击编盘线轴或 3D 模型中的线轴应用当前颜色。</div>
+</div>
+<div class="inline">
+<div id="colourSources">
+<div class="colourSource" id="farbtasticPicker" object="farbtasticColourSource" name="全彩色"><div class="farbtastic"><div class="color" style="background-color: rgb(255, 0, 0);"></div><div class="wheel"></div><div class="overlay"></div><div class="h-marker marker" style="left: 97px; top: 13px;"></div><div class="sl-marker marker" style="left: 47px; top: 97px;"></div></div></div>
+<div class="colourSource hideMe" id="dmcPalette" object="dmcPaletteColourSource" name="DMC调色板(绣线)">
+<img id="dmcPaletteImage" src="./assets/dmcPicker.png" width="194" height="194">
+<canvas id="dmcPaletteCanvas" width="194" height="194"></canvas>
+</div>
+<div class="colourSource hideMe" id="dmcNumber" object="dmcNumberColourSource" name="DMC编号(绣线)">
+DMC代码: <input id="dmcNumberInput" type="text" maxlength="5" size="5">
+<button type="button" id="dmcNumberInputSet" title="设置"><img src="./assets/setColour.png"></button><br>
+<p id="dmcNumberName"></p>
+<div id="dmcNumberSample"></div>
+</div>
+</div>
+<select id="colourSourceSelect"></select>
+</div>
+<div id="colLists" class="inline">
+<div id="colList1"><div class="colColumn clickable"><span class="colSample selectedColour" id="col0" style="background:#ff0000" cdocol="#ff0000" title="红色"></span><span>X</span></div></div>
+</div>
+</div>
+<div id="sequencePanel">
+<button id="sequenceToggle" type="button" aria-expanded="false">展开</button>
+<div id="diagrams"></div>
+</div>
+<div id="statusPanel">
+<div id="progressLine" class="hideMe">
+<div id="progress">剩余 0 步</div>
+<button id="stop" type="button" onclick="stopClicked();">停止编织</button>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+</div><script type="text/javascript">window.addEventListener("load",function(){setTimeout(function(){if("undefined"!=typeof camera&&"undefined"!=typeof renderer&&"undefined"!=typeof scene){camera.position.z;var e=document.getElementById("braidModelContainer"),n=e?Math.max(760,e.clientWidth):1100,a=e?Math.max(560,e.clientHeight):640;camera.position.x=-16,camera.position.y=13,camera.position.z=354,renderer.setSize(n,a),camera.aspect=n/a,camera.updateProjectionMatrix(),renderer.render(scene,camera)}},500)});</script><script type="text/javascript">function atelierCurrentCameraState(){return"undefined"!=typeof camera&&camera?{position:{x:camera.position.x,y:camera.position.y,z:camera.position.z},rotation:{x:camera.rotation.x,y:camera.rotation.y,z:camera.rotation.z}}:null}function atelierNormalizeImportedProject(e){var t;try{t=JSON.parse(e)}catch(o){t=JSON.parse(decodeURIComponent(e))}return t&&"kumihimo-workbench"===t.app&&t.state?t.state:t}function atelierApplyImportedProject(e){if("function"!=typeof BraidState)throw new Error("BraidState is not available");var t=atelierNormalizeImportedProject(e);new BraidState(JSON.stringify(t)).apply(),braidStates.newState(),"function"==typeof updateSequenceDrawer&&updateSequenceDrawer(),"function"==typeof renderColourChangeNow?renderColourChangeNow():"function"==typeof updateScene&&updateScene()}function atelierInstallProjectImportControl(){var e=document.getElementById("importProjectFile");e&&!e.__atelierImportInstalled&&(e.__atelierImportInstalled=!0,e.addEventListener("change",function(t){var o=t.target.files&&t.target.files[0];if(o){var r=new FileReader;r.onload=function(t){try{atelierApplyImportedProject(String(t.target.result||""))}catch(e){window.alert("无法导入该文件，请确认它是由当前组纽工作台导出的 JSON 文件。"),window.console&&console.error}finally{e.value=""}},r.readAsText(o)}}))}function atelierExportTimestamp(){return(new Date).toISOString().replace(/[-:]/g,"").replace(/\..+$/,"").replace("T","-")}function atelierSanitizeExportName(e){var t=String(e||"").trim();return(t=(t=t.replace(/[\\/:*?"<>|]/g,"-").replace(/\s+/g," ")).replace(/^\.+|\.+$/g,""))||"kumihimo-project"}function atelierBuildExportFileName(e,t){var o=atelierSanitizeExportName(e);return t&&(o+="-"+atelierExportTimestamp()),o+".json"}function atelierDownloadProject(e){if("function"==typeof BraidState){var t=new BraidState,o={app:"kumihimo-workbench",version:1,exportedAt:(new Date).toISOString(),state:JSON.parse(t.toString()),camera:atelierCurrentCameraState()},r=JSON.stringify(o,null,2),n=new Blob([r],{type:"application/json;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(n),a.download=e||atelierBuildExportFileName("kumihimo-project",!0),document.body.appendChild(a),a.click(),document.body.removeChild(a),setTimeout(function(){URL.revokeObjectURL(a.href)},1e3)}}function atelierEnsureExportDialog(){var e=document.getElementById("exportDialogBackdrop");if(e)return e;var t=document.createElement("div");return t.id="exportDialogBackdrop",t.className="export-dialog-backdrop",t.innerHTML='<div class="export-dialog" role="dialog" aria-modal="true" aria-labelledby="exportDialogTitle"><h2 id="exportDialogTitle">导出项目</h2><label>文件名<input id="exportFileNameInput" type="text" autocomplete="off"></label><label class="export-option"><input id="exportTimestampOption" type="checkbox" checked> 添加时间戳</label><div id="exportFilePreview" class="export-preview"></div><div class="export-dialog-actions"><button type="button" id="exportCancelButton">取消</button><button type="button" id="exportConfirmButton">导出 JSON</button></div></div>',document.body.appendChild(t),t}function atelierOpenExportDialog(){var e=atelierEnsureExportDialog(),t=document.getElementById("exportFileNameInput"),o=document.getElementById("exportTimestampOption"),r=document.getElementById("exportFilePreview"),n=document.getElementById("exportCancelButton"),a=document.getElementById("exportConfirmButton"),i="kumihimo-project";function l(){r.textContent="导出后文件："+atelierBuildExportFileName(t.value||i,o.checked)}function c(){e.classList.remove("is-open"),document.removeEventListener("keydown",d)}function p(){var e=atelierBuildExportFileName(t.value||i,o.checked);c(),atelierDownloadProject(e)}function d(e){"Escape"===e.key&&c(),"Enter"===e.key&&document.activeElement===t&&(e.preventDefault(),p())}t.value=i,o.checked=!0,l(),t.oninput=l,o.onchange=l,n.onclick=c,a.onclick=p,e.onclick=function(t){t.target===e&&c()},document.addEventListener("keydown",d),e.classList.add("is-open"),setTimeout(function(){t.focus(),t.select()},0)}function atelierExportProject(){atelierOpenExportDialog()}function atelierOpenProjectImport(){atelierInstallProjectImportControl();var e=document.getElementById("importProjectFile");e&&e.click()}function atelierInstallProjectIOControls(){atelierInstallProjectImportControl();var e=document.getElementById("saveButton"),t=document.getElementById("importButton");e&&!e.__atelierExportInstalled&&(e.__atelierExportInstalled=!0,e.addEventListener("click",atelierExportProject)),t&&!t.__atelierImportButtonInstalled&&(t.__atelierImportButtonInstalled=!0,t.addEventListener("click",atelierOpenProjectImport))}window.saveClicked=atelierExportProject,window.importClicked=atelierOpenProjectImport,window.addEventListener("load",atelierInstallProjectIOControls);</script><script type="text/javascript">window.addEventListener("load",function(){setTimeout(function(){var e=document.getElementById("threadPossCanvas");e&&"undefined"!=typeof threads&&"undefined"!=typeof currentColour&&(e.addEventListener("click",function(t){if(!t.defaultPrevented&&window.atelierCanApplyColour&&window.atelierCanApplyColour()){var r=e.getBoundingClientRect(),n=t.clientX-r.left,a=t.clientY-r.top,i=e.width/2,o=n-i,d=a-e.height/2,l=Math.atan2(d,o),s=Math.sqrt(o*o+d*d),u=i-20+10;if(!(s<u-6||s>u+6)){for(var c=null,f=Math.PI,p=0;p<threads.length;p++){var m=threads[p],h=m.dir,y=Math.abs(l-h);y>Math.PI&&(y=2*Math.PI-y),y<f&&(f=y,c=m)}var w=Math.max(Math.PI/Math.max(threads.length,1),Math.PI/18);c&&f<w&&(c.setToCurrentColour(),"undefined"!=typeof braidStates&&braidStates.newState(),"undefined"!=typeof hideStartInstructions&&hideStartInstructions(),"undefined"!=typeof redrawAll&&redrawAll(),"function"==typeof renderScene?renderScene():"undefined"!=typeof renderer&&renderer&&"undefined"!=typeof scene&&"undefined"!=typeof camera&&renderer.render(scene,camera),t.preventDefault(),t.stopImmediatePropagation())}}}),e.style.cursor="default")},600)}),function(){var e=!1,t={active:!1,moved:!1,blockClick:!1,lastX:0,lastY:0,startX:0,startY:0};function r(){return!("undefined"==typeof camera||!camera||(camera.position.x=-16,camera.position.y=13,camera.position.z=354,"undefined"!=typeof renderer&&renderer&&"undefined"!=typeof scene&&("function"==typeof camera.updateProjectionMatrix&&camera.updateProjectionMatrix(),renderer.render(scene,camera)),window.__atelierCameraFramed=!0,0))}function n(){if(window.__atelierStandardCameraResetInstalled||"function"!=typeof resetCamera)return!1;var e=resetCamera;return window.resetCamera=function(){e.apply(this,arguments),r()},window.__atelierStandardCameraResetInstalled=!0,!0}function a(e){if("number"==typeof e){for(var t=e.toString(16);t.length<6;)t="0"+t;return"#"+t}return e?"#"===e.charAt(0)?e:"#"+e:"#d8b46a"}function i(e){e&&!e._atelierEnhanced&&(e._atelierEnhanced=!0,e.applyAtelierMaterial=function(){var e=function(e){var t=e&&e._colour&&e._colour.toNum?e._colour.toNum():14201962,r={color:t,overdraw:!0};return THREE.MeshPhongMaterial?(r.specular=6047784,r.shininess=34,"ambient"in THREE.MeshPhongMaterial.prototype&&(r.ambient=t),new THREE.MeshPhongMaterial(r)):new THREE.MeshLambertMaterial(r)}(this);e.needsUpdate=!0,this.tube&&(this.tube.material=e,this.tube.material.needsUpdate=!0),this.end&&(this.end.material=e,this.end.material.needsUpdate=!0)},e.setToCurrentColour=function(){this._colour=new CdoColour(currentColour),this.applyAtelierMaterial(),colourList.colourUsed(currentColour)})}function o(){if("undefined"!=typeof threads&&threads){for(var e=0;e<threads.length;e++)i(threads[e]),threads[e].applyAtelierMaterial&&threads[e].applyAtelierMaterial();window.atelierDebug={enhancedThreads:threads.length,threadCount:threads.length,materialType:threads[0]&&threads[0].tube&&threads[0].tube.material?threads[0].tube.material.constructor.name:null,hasFiberTexture:!!(threads[0]&&threads[0].tube&&threads[0].tube.material&&threads[0].tube.material.map)},document.body.dataset.atelierEnhancedThreads=String(threads.length),document.body.dataset.atelierFiberTexture=window.atelierDebug.hasFiberTexture?"true":"false"}}function d(){try{if(window.atelierDebug={installAttempted:!0,hasThree:"undefined"!=typeof THREE,hasThreads:"undefined"!=typeof threads,hasUpdateScene:"function"==typeof updateScene},document.body.dataset.atelierInstallAttempted="true","undefined"==typeof THREE||"undefined"==typeof threads)return!1;if(!window.__atelierUpdateSceneWrapped&&"function"==typeof updateScene){var e=updateScene;updateScene=function(){e(),o()},window.__atelierUpdateSceneWrapped=!0}return window.__atelierLightsAdded||"function"!=typeof addLight||(addLight(16769962,-45,110,95),addLight(8957616,70,52,-60),window.__atelierLightsAdded=!0),"undefined"!=typeof renderer&&renderer&&(renderer.setClearColor?renderer.setClearColor(197379,0):renderer.setClearColorHex&&renderer.setClearColorHex(197379,0),renderer.domElement&&(renderer.domElement.style.background="transparent")),"function"==typeof updateScene?updateScene():o(),!0}catch(e){return window.atelierDebug={installAttempted:!0,installError:e&&e.message?e.message:String(e)},document.body.dataset.atelierInstallError=window.atelierDebug.installError,!1}}function l(e){e=void 0===e?16:e,d()?s():e>0&&setTimeout(function(){l(e-1)},250)}function s(){var e=document.getElementById("braidModelContainer"),t=document.getElementById("braidModel");if(e&&t&&"undefined"!=typeof renderer&&renderer&&"undefined"!=typeof camera){var n=Math.max(760,e.clientWidth),a=Math.max(560,e.clientHeight);renderer.setSize(n,a),camera.aspect=n/a,window.__atelierCameraFramed||r(),camera.updateProjectionMatrix(),renderer.domElement&&(renderer.domElement.style.width="100%",renderer.domElement.style.height="100%"),"function"==typeof renderScene?renderScene():"undefined"!=typeof scene&&renderer.render(scene,camera)}}function u(){var e=document.getElementById("braidModelContainer"),r=document.getElementById("braidModel");e&&r&&!e.__atelierDragInstalled&&(e.__atelierDragInstalled=!0,r.addEventListener("click",function(e){t.blockClick&&(e.preventDefault(),e.stopImmediatePropagation(),t.blockClick=!1)},!0),e.addEventListener("mousedown",function(r){t.active=!0,t.moved=!1,t.startX=t.lastX=r.clientX,t.startY=t.lastY=r.clientY,e.classList.add("is-dragging")}),document.addEventListener("mousemove",function(e){if(t.active){var r=e.clientX-t.startX,n=e.clientY-t.startY,a=e.clientX-t.lastX,i=e.clientY-t.lastY;t.lastX=e.clientX,t.lastY=e.clientY,Math.sqrt(r*r+n*n)>5&&(t.moved=!0,t.blockClick=!0),t.moved&&function(e,t){if("undefined"!=typeof threads&&"undefined"!=typeof camera){for(var r=0;r<threads.length;r++)threads[r].mesh&&(threads[r].mesh.rotation.y+=.008*e);var n;camera.position.y=(n=camera.position.y+.12*t,Math.max(-80,Math.min(120,n))),"undefined"!=typeof renderer&&"undefined"!=typeof scene&&renderer.render(scene,camera)}}(a,i)}}),document.addEventListener("mouseup",function(){t.active&&(t.active=!1,e.classList.remove("is-dragging"),t.moved&&setTimeout(function(){t.blockClick=!1},80))}))}function c(){var e=document.getElementById("enterWorkbench"),t=document.getElementById("returnHero");if(e&&!e.__atelierInstalled||(e=null),e&&(e.__atelierInstalled=!0,e.addEventListener("click",function(){document.body.classList.add("workbench-entered"),window.atelierDebug={entryClicked:!0},setTimeout(function(){l(8),s()},260)})),t&&!t.__atelierInstalled){t.__atelierInstalled=!0;var r=function(){document.body.classList.remove("workbench-entered"),window.scrollTo(0,0)};t.addEventListener("click",r),t.addEventListener("keydown",function(e){"Enter"!==e.key&&" "!==e.key||(e.preventDefault(),r())})}}function f(){var e=document.getElementById("sequencePanel"),t=document.getElementById("diagrams"),r=document.getElementById("sequenceToggle");if(e&&t&&r){!function(){p();var e=document.getElementById("diagrams");if(e){for(var t=e.querySelectorAll(".diagramItem"),r=0;r<t.length;r++){var n=t[r],a=n.querySelector(".diagramStepLabel");a||((a=document.createElement("div")).className="diagramStepLabel",n.insertBefore(a,n.firstChild)),a.textContent="step"+(r+1)}!function(){if("undefined"!=typeof allSteps)for(var e=0;e<allSteps.length;e++){var t=allSteps[e]&&allSteps[e].diagram;t&&!t.__atelierArrowRestyled&&(t.__atelierArrowRestyled=!0,t.blobRadius=5.4,t.drawDisk=function(){var e=this.ctx;e.lineWidth=1.2,e.strokeStyle="rgba(216, 180, 106, 0.48)",e.beginPath(),e.arc(this.xo,this.yo,this.diskRadius,0,2*Math.PI),e.closePath(),e.stroke();for(var t=0;t<this.desc.poss.length;t++){var r=this.desc.poss[t];this.drawBlob(this.blobPos(r.angle),"rgba(245, 239, 226, 0.52)",threads[r.id].cssColour())}},t.drawBlob=function(e,t,r){var n=this.ctx;n.save(),n.lineWidth=1.1,n.strokeStyle="#000000"===t?"rgba(245, 239, 226, 0.52)":t,n.fillStyle=r,n.shadowColor="rgba(0, 0, 0, 0.38)",n.shadowBlur=2,n.beginPath(),n.arc(e.x,e.y,this.blobRadius,0,2*Math.PI),n.closePath(),n.fill(),n.shadowBlur=0,n.stroke(),n.restore()},t.drawMove=function(e){var t=this.blobPos(e.from),r=this.blobPos(e.to),n=threads[e.id].cssColour();this.drawBlob(t,"rgba(245, 239, 226, 0.52)",n),this.drawBlob(r,"rgba(0,0,0,0.5)","rgba(255,255,255,0.3)"),this.drawArrow(t,r)},t.drawRepeat=function(){var e=this.ctx,t=P();e.save(),e.fillStyle="rgba(216, 180, 106, 0.92)",e.shadowColor="rgba(0, 0, 0, 0.55)",e.shadowBlur=3,e.textAlign="center",e.textBaseline="middle",e.font="13px Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif",e.fillText("从第 "+this.desc.repeatFrom+" 步到第 "+t+" 步",this.xo,this.yo-10),e.fillText("循环 "+this.desc.repeatTimes+" 次",this.xo,this.yo+14),e.restore()},t.drawArrow=function(e,t){var r=this.ctx;r.lineWidth=.75,r.strokeStyle="rgba(28, 22, 13, 0.78)",r.fillStyle="rgba(196, 166, 105, 0.78)",r.beginPath(),r.moveTo(e.x,e.y);var n=new THREE.Vector2(e.x,e.y),a=new THREE.Vector2(t.x,t.y).clone().sub(n),i=a.length();if(!(i<.1)){a.divideScalar(i);var o=new THREE.Vector2(-a.y,a.x),d=n.clone(),l=1.15,s=4.5;this.addLine(d.add(o.clone().multiplyScalar(l))),this.addLine(d.add(a.clone().multiplyScalar(i-l-s))),this.addLine(d.add(o.clone().multiplyScalar(s))),this.addLine(d.add(o.clone().multiplyScalar(-s-l)).add(a.clone().multiplyScalar(l+s))),this.addLine(d.add(o.clone().multiplyScalar(-s-l)).add(a.clone().multiplyScalar(-l-s))),this.addLine(d.add(o.clone().multiplyScalar(s))),this.addLine(d.add(a.clone().multiplyScalar(-(i-l-s)))),this.addLine(d.add(o.clone().multiplyScalar(l))),r.closePath(),r.fill(),r.stroke()}},t.update&&t.update())}}()}}();var n=Math.max(0,t.clientWidth),a=Math.max(1,Math.floor(n/122)),i=t.querySelectorAll(".diagramItem").length>a;if(e.classList.toggle("has-overflow",i),r.style.display=i?"":"none",!i)return e.classList.remove("is-expanded","is-collapsed"),document.body.classList.remove("sequence-expanded"),r.setAttribute("aria-expanded","false"),void(r.textContent="展开");e.dataset.userCollapsed?(e.classList.add("is-collapsed"),e.classList.remove("is-expanded"),document.body.classList.remove("sequence-expanded"),r.setAttribute("aria-expanded","false"),r.textContent="展开"):(e.classList.add("is-expanded"),e.classList.remove("is-collapsed"),document.body.classList.add("sequence-expanded"),r.setAttribute("aria-expanded","true"),r.textContent="收起")}}function p(){if(window.CanvasRenderingContext2D&&!CanvasRenderingContext2D.prototype.__atelierStepLabelFiltered){var e=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(t){var r=this.canvas;if(!(r&&r.classList&&r.classList.contains("diagramCanvas")&&/^step\s+\d+$/i.test(String(t||""))))return e.apply(this,arguments)},CanvasRenderingContext2D.prototype.__atelierStepLabelFiltered=!0}}function m(){var e=document.getElementById("sequencePanel"),t=document.getElementById("diagrams"),r=document.getElementById("sequenceToggle");e&&t&&r&&!e.__atelierDrawerInstalled&&(e.__atelierDrawerInstalled=!0,r.addEventListener("click",function(){e.classList.contains("is-expanded")?e.dataset.userCollapsed="true":delete e.dataset.userCollapsed,f()}),"undefined"!=typeof MutationObserver&&new MutationObserver(f).observe(t,{childList:!0}),setTimeout(f,0))}function h(){return e}function y(){"undefined"!=typeof marudaiView&&marudaiView&&marudaiView.draw&&marudaiView.draw(),"function"==typeof updateScene&&(updateScene(),o()),"function"==typeof renderScene?renderScene():"undefined"!=typeof renderer&&renderer&&"undefined"!=typeof scene&&"undefined"!=typeof camera&&renderer.render(scene,camera),"function"==typeof requestAnimationFrame&&requestAnimationFrame(function(){"function"==typeof renderScene?renderScene():"undefined"!=typeof renderer&&renderer&&"undefined"!=typeof scene&&"undefined"!=typeof camera&&renderer.render(scene,camera),requestAnimationFrame(function(){"function"==typeof renderScene?renderScene():"undefined"!=typeof renderer&&renderer&&"undefined"!=typeof scene&&"undefined"!=typeof camera&&renderer.render(scene,camera)})})}function w(e){return!(!h()||!e||"undefined"==typeof currentColour||(e._colour=new CdoColour(currentColour),e.applyAtelierMaterial&&e.applyAtelierMaterial(),"function"==typeof e.updateScene&&(e.updateScene(),i(e),e.applyAtelierMaterial&&e.applyAtelierMaterial()),"undefined"!=typeof colourList&&colourList&&colourList.colourUsed&&colourList.colourUsed(currentColour),"undefined"!=typeof braidStates&&braidStates.newState(),"undefined"!=typeof hideStartInstructions&&hideStartInstructions(),"undefined"!=typeof marudaiView&&marudaiView&&marudaiView.draw&&marudaiView.draw(),"undefined"!=typeof renderer&&renderer&&"undefined"!=typeof scene&&"undefined"!=typeof camera&&renderer.render(scene,camera),y(),0))}function v(){var e=document.getElementById("atelierColourModeToggle"),t=document.getElementById("atelierPaletteHint"),r=document.getElementById("threadPossCanvas"),n=h();document.body.classList.toggle("atelier-colour-mode",n),e&&(e.classList.toggle("is-active",n),e.setAttribute("aria-pressed",n?"true":"false"),e.textContent=n?"改色模式：开启":"改色模式：关闭"),t&&(t.textContent=n?"改色模式已开启：点击编盘线轴或 3D 模型线轴应用当前颜色。":"开启改色模式后，点击编盘线轴或 3D 模型中的线轴应用当前颜色。"),r&&(r.style.cursor=n?"crosshair":"default")}function g(){var t=document.getElementById("atelierColourModeToggle");t&&!t.__atelierColourModeInstalled&&(t.__atelierColourModeInstalled=!0,t.addEventListener("click",function(){e=!e,v()})),window.atelierCanApplyColour=h,v()}function b(e){if(!h()||t.blockClick||"undefined"==typeof THREE||"undefined"==typeof camera||"undefined"==typeof scene)return!1;var r=document.getElementById("braidModel");if(!r)return!1;var n=r.getBoundingClientRect(),a=e.clientX-n.left,i=e.clientY-n.top;if(a<0||i<0||a>n.width||i>n.height)return!1;var o=new THREE.Vector3(a/n.width*2-1,-i/n.height*2+1,.5);if("undefined"!=typeof projector&&projector&&projector.unprojectVector)projector.unprojectVector(o,camera);else{if(!o.unproject)return!1;o.unproject(camera)}for(var d=scene.__objects||scene.children||[],l=new THREE.Raycaster(camera.position,o.sub(camera.position).normalize()).intersectObjects(d,!0),s=0;s<l.length;s++){var u=l[s].object,c=u&&u.braidThread;if(!c&&u&&u.parent&&(c=u.parent.braidThread),c&&w(c))return e.preventDefault(),e.stopImmediatePropagation(),!0}return!1}function C(){var e=document.getElementById("braidModel");if(e&&(window.jQuery&&window.jQuery(e).off("click"),!e.__atelierImmediateColouringInstalled)){e.__atelierImmediateColouringInstalled=!0,e.dataset.atelierImmediateColouring="true";var r=!1;e.addEventListener("mousedown",function(e){h()&&b(e)&&(r=!0,t.blockClick=!0,setTimeout(function(){t.blockClick=!1,r=!1},120))},!0),e.addEventListener("click",function(e){if(r)return e.preventDefault(),void e.stopImmediatePropagation();h()&&b(e)},!0)}}function S(e){e=a(e).toLowerCase();var t=document.getElementById("atelierColourPicker"),r=document.getElementById("atelierCurrentColour"),n=document.querySelectorAll(".atelier-swatch");t&&t.value!==e&&(t.value=e),r&&(r.style.backgroundColor=e);for(var i=0;i<n.length;i++)n[i].classList.toggle("is-selected",n[i].dataset.colour===e)}function I(e){if(e=a(e).toLowerCase(),"undefined"!=typeof currentColour&&(currentColour=e),"undefined"!=typeof colourSource&&colourSource&&colourSource.setColour)try{colourSource.setColour(e)}catch(e){}S(e)}function E(){var e=document.getElementById("atelierColourPicker"),t=document.getElementById("atelierSwatches");if(e&&t&&!e.__atelierPaletteInstalled){e.__atelierPaletteInstalled=!0;var r=["#ff4b2f","#ff8a2a","#f2d45c","#82e56f","#58dfc4","#55b8ff","#8c7dff","#ee4da0","#f3efe3","#c9a46b","#8f4b36","#1f2937","#2b6f5c","#3956a6","#6b3f8d","#111111"];t.innerHTML="";for(var n=0;n<r.length;n++){var i=document.createElement("button");i.type="button",i.className="atelier-swatch",i.dataset.colour=r[n],i.style.setProperty("--swatch-colour",r[n]),i.title=r[n],i.addEventListener("click",function(e){I(e.currentTarget.dataset.colour)}),t.appendChild(i)}e.addEventListener("input",function(){I(e.value)}),e.addEventListener("change",function(){I(e.value)}),setTimeout(function(){S(a("undefined"==typeof currentColour?"#ff0000":currentColour).toLowerCase())},0)}}function _(e){if(!h()||!e||"undefined"==typeof currentColour)return!1;if(e._colour=new CdoColour(currentColour),i(e),e.applyAtelierMaterial&&e.applyAtelierMaterial(),"function"==typeof e.updateScene&&(e.updateScene(),i(e),e.applyAtelierMaterial&&e.applyAtelierMaterial()),"undefined"!=typeof colourList&&colourList&&colourList.colourUsed&&colourList.colourUsed(currentColour),"undefined"!=typeof braidStates&&braidStates.newState(),"undefined"!=typeof hideStartInstructions&&hideStartInstructions(),"undefined"!=typeof marudaiView&&marudaiView&&marudaiView.draw&&marudaiView.draw(),"undefined"!=typeof allSteps)for(var t=0;t<allSteps.length;t++)allSteps[t]&&allSteps[t].updateDiagram&&allSteps[t].updateDiagram();return"undefined"!=typeof renderer&&renderer&&"undefined"!=typeof scene&&"undefined"!=typeof camera&&renderer.render(scene,camera),y(),!0}function L(){var e=document.getElementById("threadPossCanvas");if(e&&!e.__atelierColouringInstalled){e.__atelierColouringInstalled=!0,e.dataset.atelierColouringInstalled="true";var t=!1;e.addEventListener("mousedown",function(n){if(0===n.button&&h()){var a=e.getBoundingClientRect(),i=r({x:n.clientX-a.left,y:n.clientY-a.top});t=!(!i||!_(i)),n.preventDefault(),n.stopImmediatePropagation()}},!0),e.addEventListener("click",function(n){if(h()){if(t)return t=!1,n.preventDefault(),void n.stopImmediatePropagation();var a=e.getBoundingClientRect(),i=r({x:n.clientX-a.left,y:n.clientY-a.top});i&&_(i)&&(n.preventDefault(),n.stopImmediatePropagation())}},!0)}function r(e){if("undefined"==typeof marudaiView||!marudaiView||"function"!=typeof marudaiView.threadAtPos)return null;var t=marudaiView.threadAtPos(e);return t>=0&&threads[t]?threads[t]:null}}function x(){if(window.__atelierResetColourPreserverInstalled||"function"!=typeof resetClicked)return!1;window.__atelierResetColourPreserverInstalled=!0;var e=resetClicked;return window.resetClicked=resetClicked=function(){var t=[];if("undefined"!=typeof threads)for(var r=0;r<threads.length;r++)threads[r]&&threads[r]._colour&&(t[r]=threads[r]._colour.toNum());e();for(var n=0;n<t.length&&n<threads.length;n++)void 0!==t[n]&&threads[n].setColour(t[n]);"function"==typeof updateScene&&updateScene(),"function"==typeof redrawAll&&redrawAll(),"undefined"!=typeof braidStates&&braidStates.newState&&braidStates.newState()},!0}function M(){if(window.__atelierMarudaiThreadRadiusInstalled||"function"!=typeof MarudaiView)return!1;window.__atelierMarudaiThreadRadiusInstalled=!0;var e=MarudaiView;return window.MarudaiView=MarudaiView=function(t){var r=new e(t);r.threadRadius=6;var n=r.draw;return r.draw=function(){n.call(this),this.ctx&&(this.ctx.save(),this.ctx.lineWidth=1.2,this.ctx.strokeStyle="rgba(216, 180, 106, 0.52)",this.ctx.shadowColor="rgba(216, 180, 106, 0.2)",this.ctx.shadowBlur=3,this.ctx.beginPath(),this.ctx.arc(this.xo,this.yo,this.marudaiRadius,0,2*Math.PI),this.ctx.closePath(),this.ctx.stroke(),this.ctx.restore())},r},!0}function T(){return!window.__atelierSymmetricInitialThreadLayoutInstalled&&"function"==typeof initThreadInput&&(window.__atelierSymmetricInitialThreadLayoutInstalled=!0,window.initThreadInput=initThreadInput=function(){for(var e in threads)threads[e].destroy();braidTipHeight=1,threads=[];for(var t=Number($("#numThreads").val()),r=function(e){return e%2==0?-Math.PI/2+Math.PI/e:-Math.PI/2}(t),n=0;n<t;n++){var a=r+2*n*Math.PI/t,i=new BraidThread(a,n);i.setColour(simpleColour(n)),threads.push(i),i.addStartBlob(t)}marudaiView.initThreads(),cancelExec(),showProgress()},!0)}function P(){var e=1;if("undefined"!=typeof allSteps&&allSteps)for(var t=0;t<allSteps.length;t++)allSteps[t]&&"threadMove"===allSteps[t].type&&(e=allSteps[t].num);return Math.max(1,e)}function k(){var e=document.getElementById("repeatToStepLabel");e&&(e.textContent=String(P()))}function B(){if("function"!=typeof setRepeatLimits)return k(),!1;if(!window.__atelierRepeatToStepLabelInstalled){var e=setRepeatLimits;window.setRepeatLimits=setRepeatLimits=function(){e(),k()},window.__atelierRepeatToStepLabelInstalled=!0}return k(),!0}window.atelierApplyStandardCameraFrame=r,window.saveClicked=atelierExportProject,window.importClicked=function(){var e=document.getElementById("importProjectFile");e&&e.click()},window.addEventListener("load",function(){var e;M(),T(),p(),n(),c(),u(),E(),g(),(e=document.getElementById("importProjectFile"))&&!e.__atelierImportInstalled&&(e.__atelierImportInstalled=!0,e.addEventListener("change",function(t){var r=t.target.files&&t.target.files[0];if(r){var n=new FileReader;n.onload=function(t){try{!function(e){if("function"!=typeof BraidState)throw new Error("BraidState is not available");var t=function(e){var t;try{t=JSON.parse(e)}catch(r){t=JSON.parse(decodeURIComponent(e))}return t&&"kumihimo-workbench"===t.app&&t.state?t.state:t}(e);new BraidState(JSON.stringify(t)).apply(),braidStates.newState(),f(),y()}(String(t.target.result||""))}catch(e){window.alert("无法导入该文件，请确认它是由当前组纽工作台导出的 JSON 文件。"),window.console&&console.error}finally{e.value=""}},n.readAsText(r)}})),C(),m(),L(),x(),B(),setTimeout(function(){n(),g(),C(),x(),B(),l()},900)}),window.addEventListener("resize",function(){setTimeout(function(){s(),f()},80)}),M(),T(),p(),n(),c(),u(),E(),g(),C(),m(),L(),x(),B();var A=0,R=setInterval(function(){A++,M(),T(),n(),c(),u(),s(),g(),C(),x(),B(),(d()||A>20)&&clearInterval(R)},500)}();</script></body>
+</html>
